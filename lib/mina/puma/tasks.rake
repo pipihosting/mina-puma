@@ -19,17 +19,13 @@ namespace :puma do
 
   desc 'Start puma'
   task start: :remote_environment do
-    puma_port_option = "-p #{fetch(:puma_port)}" if set?(:puma_port)
-
     comment "Starting Puma..."
     command %[
       if [ -e "#{fetch(:pumactl_socket)}" ]; then
         echo 'Puma is already running!';
       else
         if [ -e "#{fetch(:puma_config)}" ]; then
-          cd #{fetch(:puma_root_path)} && #{fetch(:puma_cmd)} -q -e #{fetch(:puma_env)} -C #{fetch(:puma_config)} &
-        else
-          cd #{fetch(:puma_root_path)} && #{fetch(:puma_cmd)} -q -e #{fetch(:puma_env)} -b "unix://#{fetch(:puma_socket)}" #{puma_port_option} -S #{fetch(:puma_state)} --pidfile #{fetch(:puma_pid)} --control 'unix://#{fetch(:pumactl_socket)}' --redirect-stdout "#{fetch(:puma_stdout)}" --redirect-stderr "#{fetch(:puma_stderr)}" & 
+          systemctl --user start puma-web.service
         fi
       fi
     ]
