@@ -25,7 +25,7 @@ namespace :puma do
         echo 'Puma is already running!';
       else
         if [ -e "#{fetch(:puma_config)}" ]; then
-          systemctl --user start puma-web.service
+          sudo systemctl start puma-web.service
         fi
       fi
     ]
@@ -33,8 +33,8 @@ namespace :puma do
 
   desc 'Stop puma'
   task stop: :remote_environment do
-    comment "Stopping Puma..."
-    pumactl_command 'stop'
+    comment "Stopping Puma with systemd..."
+    command "sudo systemctl stop puma-web.service"
     command %[rm -f '#{fetch(:pumactl_socket)}']
   end
 
